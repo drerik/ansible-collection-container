@@ -1,0 +1,50 @@
+---
+- name: Add docker-ce repo to yum
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+
+- name: install EPEL repo
+  ansible.builtin.yum:
+   name: epel-release
+   state: present
+
+- name: Install docker and dependencies
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: latest
+  loop:
+   - python-pip
+   - python-devel
+   - yum-utils
+   - device-mapper-persistent-data
+   - lvm2
+   - docker-ce
+   - docker-ce-cli
+   - containerd.io
+   - gcc
+   - gcc-c++
+   - kernel-devel
+   - make
+
+- name: install zipp package
+  ansible.builtin.pip:
+    name: zipp
+    version: 1.0.0
+
+- name: install docker-compose
+  ansible.builtin.pip:
+    name: "{{ item }}"
+  loop:
+    - docker-compose
+
+# - name: install docker-compose
+  # https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" Linux x86_64
+
+- name: enable and start docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: yes
+

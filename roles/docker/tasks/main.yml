@@ -1,0 +1,7 @@
+- name: Run Centos related tasks
+  include_tasks: rhel.yml
+  when:  ansible_distribution == 'CentOS'
+
+- name: Run Ubuntu related tasks
+  include_tasks: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'

@@ -1,0 +1,61 @@
+- name: Add the universe repository
+  ansible.builtin.apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu {{ansible_distribution_release}} main universe
+    state: present
+
+- name: Add the universe-security repository
+  ansible.builtin.apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu {{ansible_distribution_release}}-security main universe
+    state: present
+
+- name: Add the universe-updates repository
+  ansible.builtin.apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu {{ansible_distribution_release}}-updates main universe
+    state: present
+
+- name: Make shure distro files are not installed
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+    - docker
+    - docker-engine
+    - docker.io
+    - containerd
+    - runc
+
+- name: Make shure requirements are present
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - python3-pip
+    - gpg
+    - gpg-agent
+    - vim-tiny
+
+- name: Add docker official gpg key to apt keychain
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add the docker repository
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+    state: present
+    filename: docker
+
+- name: Install docker from repository
+  ansible.builtin.apt:
+    name: docker-ce
+    update_cache: yes
+
+- name: Install docker-compose from pip
+  ansible.builtin.pip:
+    name: docker-compose
