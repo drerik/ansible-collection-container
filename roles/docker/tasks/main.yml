@@ -5,3 +5,6 @@
 - name: Run Ubuntu related tasks
   include_tasks: ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
+
+- name: Configure docker
+  include_tasks: configure.yml
