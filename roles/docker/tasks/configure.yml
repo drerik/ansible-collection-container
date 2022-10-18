@@ -1,0 +1,13 @@
+- name: Configure /etc/docker/daemon.json
+  tags: docker_config
+  copy:
+    dest: /etc/docker/daemon.json
+    content: "{{ docker_daemon_config | to_nice_json( ensure_ascii=False) }}"
+  register: docker_daemon_config
+
+- name: restart docker service when daemon config has changed
+  tags: docker_config
+  service:
+    name: docker
+    state: restarted
+  when: docker_daemon_config.changed
